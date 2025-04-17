@@ -10,17 +10,17 @@ from schemas.movie import Movie
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
 
-@router.get("/movies", response_model=list[Movie])
+@router.get("/", response_model=list[Movie])
 def read_movies_list():
     return MOVIE_LIST
 
 
-@router.get("/movies/{id}", response_model=Movie)
+@router.get("/{id}", response_model=Movie)
 def read_movie_by_id(movie: Annotated[Movie, Depends(prefetch_movie_by_id)]) -> Movie:
     return movie
 
 
-@router.get("/movies/{id}/kp/")
+@router.get("/{id}/kp/")
 def redirect_to_kp(movie: Annotated[Movie, Depends(prefetch_movie_by_id)]):
     return RedirectResponse(
         url=movie.kp_url,
