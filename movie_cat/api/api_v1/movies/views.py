@@ -59,3 +59,28 @@ def redirect_to_kp(
         status_code=status.HTTP_404_NOT_FOUND,
         detail=f"Movie with slug {movie.slug!r} not have link for kinopoisk.ru",
     )
+
+
+@router.delete(
+    "/{slug/",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Short URL not found",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "detail": "URL slug not found",
+                    },
+                },
+            },
+        },
+    },
+)
+def delete_movie_by_slug(
+    movie: Annotated[
+        Movie,
+        Depends(prefetch_movie_by_slug),
+    ],
+) -> None:
+    storage.delete(movie=movie)
