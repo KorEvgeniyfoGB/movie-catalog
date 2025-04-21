@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, PositiveInt, AnyHttpUrl
 
 
 class MovieBase(BaseModel):
+    slug: str
     title: str
     description: str | None
     duration: PositiveInt | None = None
@@ -17,6 +18,7 @@ class MovieCreate(MovieBase):
     Модель для создания фильма
     """
 
+    slug: Annotated[str, Len(min_length=3, max_length=15)]
     title: Annotated[
         str,
         Len(min_length=1, max_length=120),
@@ -34,5 +36,3 @@ class Movie(MovieBase):
     """
     Модель фильма
     """
-
-    id: int

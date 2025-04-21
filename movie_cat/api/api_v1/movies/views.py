@@ -5,11 +5,12 @@ from fastapi import (
     Depends,
     APIRouter,
     Form,
+    HTTPException,
 )
 from starlette import status
 from starlette.responses import RedirectResponse
 
-from api.api_v1.movies.dependencies import prefetch_movie_by_id
+from api.api_v1.movies.dependencies import prefetch_movie_by_slug
 from api.api_v1.movies.crud import MOVIE_LIST
 from schemas.movie import Movie, MovieCreate
 
@@ -31,29 +32,32 @@ def read_movies_list():
 )
 def create_movie(movie_create: MovieCreate):
     return Movie(
-        id=randint(
-            1,
-            150,
-        ),
         **movie_create.model_dump(),
     )
 
 
 @router.get(
-    "/{id}",
+    "/{slug}",
     response_model=Movie,
 )
-def read_movie_by_id(
+def read_movie_by_slug(
     movie: Annotated[
         Movie,
-        Depends(prefetch_movie_by_id),
+        Depends(prefetch_movie_by_slug),
     ],
 ) -> Movie:
     return movie
 
 
-@router.get("/{id}/kp/")
-def redirect_to_kp(movie: Annotated[Movie, Depends(prefetch_movie_by_id)]):
-    return RedirectResponse(
-        url=movie.kp_url,
+@router.get("/{slug}/kp/")
+def redirect_to_kp(
+    movie: Annotated[Movie, Depends(prefetch_movie_by_slug)],
+) -> RedirectResponse:
+    if movie.kp_url:
+        return RedirectResponse(
+            url=movie.kp_url,
+        )
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=f"Movie with slug {movie.slug!r} not have link for kinopoisk.ru",
     )
