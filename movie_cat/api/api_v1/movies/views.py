@@ -62,15 +62,15 @@ def redirect_to_kp(
 
 
 @router.delete(
-    "/{slug/",
+    "/{slug}/",
     status_code=status.HTTP_204_NO_CONTENT,
     responses={
         status.HTTP_404_NOT_FOUND: {
-            "description": "Short URL not found",
+            "description": "Movie not found",
             "content": {
                 "application/json": {
                     "example": {
-                        "detail": "URL slug not found",
+                        "detail": "Movie slug not found",
                     },
                 },
             },
