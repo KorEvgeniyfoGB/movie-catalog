@@ -11,7 +11,7 @@ from starlette import status
 from starlette.responses import RedirectResponse
 
 from api.api_v1.movies.dependencies import prefetch_movie_by_slug
-from api.api_v1.movies.crud import MOVIE_LIST
+from api.api_v1.movies.crud import storage
 from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
@@ -22,7 +22,7 @@ router = APIRouter(prefix="/movies", tags=["Movies"])
     response_model=list[Movie],
 )
 def read_movies_list():
-    return MOVIE_LIST
+    return storage.get()
 
 
 @router.post(
@@ -31,9 +31,7 @@ def read_movies_list():
     status_code=status.HTTP_201_CREATED,
 )
 def create_movie(movie_create: MovieCreate):
-    return Movie(
-        **movie_create.model_dump(),
-    )
+    return storage.create(movie_in=movie_create)
 
 
 @router.get(
@@ -55,7 +53,7 @@ def redirect_to_kp(
 ) -> RedirectResponse:
     if movie.kp_url:
         return RedirectResponse(
-            url=movie.kp_url,
+            url=str(movie.kp_url),
         )
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
