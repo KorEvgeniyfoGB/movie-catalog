@@ -11,7 +11,7 @@ from starlette.responses import RedirectResponse
 
 from api.api_v1.movies.dependencies import prefetch_movie_by_id
 from api.api_v1.movies.crud import MOVIE_LIST
-from schemas.movie import Movie
+from schemas.movie import Movie, MovieCreate
 
 router = APIRouter(prefix="/movies", tags=["Movies"])
 
@@ -29,13 +29,13 @@ def read_movies_list():
     response_model=Movie,
     status_code=status.HTTP_201_CREATED,
 )
-def create_movie(title: str):
+def create_movie(movie_create: MovieCreate):
     return Movie(
         id=randint(
             1,
             150,
         ),
-        title=title,
+        **movie_create.model_dump(),
     )
 
 

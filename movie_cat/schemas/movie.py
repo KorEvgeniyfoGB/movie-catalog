@@ -1,20 +1,38 @@
 from datetime import datetime
+from typing import Annotated
 
-from pydantic import BaseModel, Field, PositiveInt
+from annotated_types import Len
+from pydantic import BaseModel, Field, PositiveInt, AnyHttpUrl
 
 
 class MovieBase(BaseModel):
-    id: int
-    title: str = Field(
-        min_length=1,
-        max_length=120,
-    )
-    description: str | None = Field(default=None, min_length=1, max_length=600)
+    title: str
+    description: str | None
     duration: PositiveInt | None = None
-    kp_url: str | None = None
+    kp_url: AnyHttpUrl | None = None
+
+
+class MovieCreate(MovieBase):
+    """
+    Модель для создания фильма
+    """
+
+    title: Annotated[
+        str,
+        Len(min_length=1, max_length=120),
+    ]
+    description: (
+        Annotated[
+            str,
+            Len(min_length=1, max_length=600),
+        ]
+        | None
+    ) = None
 
 
 class Movie(MovieBase):
     """
     Модель фильма
     """
+
+    id: int
