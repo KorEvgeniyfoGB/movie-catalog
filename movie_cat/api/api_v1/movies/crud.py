@@ -1,6 +1,7 @@
 from pydantic import BaseModel, AnyHttpUrl
 
-from schemas.movie import Movie, MovieCreate
+from schemas.movie import Movie, MovieCreate, MovieUpdate
+
 
 # MOVIE_LIST = [
 #     Movie(
@@ -46,6 +47,15 @@ class MovieStorage(BaseModel):
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
 
+    def update(
+        self,
+        movie: Movie,
+        movie_in: MovieUpdate,
+    ) -> Movie:
+        for field_name, value in movie_in:
+            setattr(movie, field_name, value)
+        return movie
+
 
 storage = MovieStorage()
 
@@ -72,5 +82,6 @@ storage.create(
         "убийство. Он предлагает миллион долларов тому, кто раскроет это преступление. Но за час до "
         "полуночи обнаруживают труп слепого слуги мистера Твейни.",
         duration=95,
+        kp_url=None,
     )
 )

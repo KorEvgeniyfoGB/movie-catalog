@@ -6,11 +6,10 @@ from pydantic import BaseModel, Field, PositiveInt, AnyHttpUrl
 
 
 class MovieBase(BaseModel):
-    slug: str
     title: str
     description: str = ""
     duration: PositiveInt | str
-    kp_url: AnyHttpUrl | None = None
+    kp_url: AnyHttpUrl | None
 
 
 class MovieCreate(MovieBase):
@@ -31,9 +30,26 @@ class MovieCreate(MovieBase):
         MaxLen(900),
     ] = ""
     duration: PositiveInt | str = "Неизвестно"
+    kp_url: AnyHttpUrl | None = None
+
+
+class MovieUpdate(MovieBase):
+
+    title: Annotated[
+        str,
+        Len(min_length=1, max_length=120),
+    ]
+    description: Annotated[
+        str,
+        MaxLen(900),
+    ]
+    duration: PositiveInt | str
+    kp_url: AnyHttpUrl | None
 
 
 class Movie(MovieBase):
     """
     Модель фильма
     """
+
+    slug: str
