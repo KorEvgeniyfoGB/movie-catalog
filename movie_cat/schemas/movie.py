@@ -1,14 +1,23 @@
-from datetime import datetime
 from typing import Annotated
 
 from annotated_types import Len, MaxLen
-from pydantic import BaseModel, Field, PositiveInt, AnyHttpUrl
+from pydantic import BaseModel, PositiveInt, AnyHttpUrl
+
+DescriptionString = Annotated[
+    str,
+    MaxLen(900),
+]
+
+TitleString = Annotated[
+    str,
+    MaxLen(900),
+]
 
 
 class MovieBase(BaseModel):
-    title: str
-    description: str = ""
-    duration: PositiveInt | str
+    title: TitleString
+    description: DescriptionString = ""
+    duration: PositiveInt | str = "Неизвестно"
     kp_url: AnyHttpUrl | None
 
 
@@ -21,30 +30,21 @@ class MovieCreate(MovieBase):
         str,
         Len(min_length=3, max_length=20),
     ]
-    title: Annotated[
-        str,
-        Len(min_length=1, max_length=120),
-    ]
-    description: Annotated[
-        str,
-        MaxLen(900),
-    ] = ""
+    title: TitleString
+    description: DescriptionString = ""
     duration: PositiveInt | str = "Неизвестно"
-    kp_url: AnyHttpUrl | None = None
+    kp_url: AnyHttpUrl | None = AnyHttpUrl("https://www.kinopoisk.ru/")
 
 
 class MovieUpdate(MovieBase):
+    pass
 
-    title: Annotated[
-        str,
-        Len(min_length=1, max_length=120),
-    ]
-    description: Annotated[
-        str,
-        MaxLen(900),
-    ]
-    duration: PositiveInt | str
-    kp_url: AnyHttpUrl | None
+
+class MovieUpdatePartial(MovieBase):
+    title: TitleString | None = None
+    description: DescriptionString | None = None
+    duration: PositiveInt | str | None = None
+    kp_url: AnyHttpUrl | None = None
 
 
 class Movie(MovieBase):

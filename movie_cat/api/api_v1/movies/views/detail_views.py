@@ -6,7 +6,7 @@ from starlette.responses import RedirectResponse
 
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import prefetch_movie_by_slug
-from schemas.movie import Movie, MovieUpdate
+from schemas.movie import Movie, MovieUpdate, MovieUpdatePartial
 
 router = APIRouter(
     prefix="/{slug}",
@@ -52,6 +52,17 @@ def update_movie_detail(
         movie=movie,
         movie_in=movie_in,
     )
+
+
+@router.patch(
+    "/",
+    response_model=Movie,
+)
+def update_movie_detail_partial(
+    movie: MovieBySlug,
+    movie_in: MovieUpdatePartial,
+) -> Movie:
+    return storage.update_partial(movie=movie, movie_in=movie_in)
 
 
 @router.get("/kp/")
