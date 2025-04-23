@@ -56,7 +56,7 @@ class MovieUpdatePartial(MovieBase):
     kp_url: AnyHttpUrl | None = None
 
 
-class MovieOutput(MovieBase):
+class MovieRead(MovieBase):
     """
     Модель вывода фильма
     """
@@ -70,3 +70,5 @@ class Movie(MovieBase):
     """
 
     slug: str
+    notes: str
+
