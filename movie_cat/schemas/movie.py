@@ -17,7 +17,7 @@ TitleString = Annotated[
 class MovieBase(BaseModel):
     title: TitleString
     description: DescriptionString = ""
-    duration: PositiveInt | str = "Неизвестно"
+    duration: PositiveInt | str
     kp_url: AnyHttpUrl | None
 
 
@@ -37,19 +37,33 @@ class MovieCreate(MovieBase):
 
 
 class MovieUpdate(MovieBase):
-    pass
+    """
+    Модель полного обновления фильма
+    """
+    duration: PositiveInt
+    kp_url: AnyHttpUrl = AnyHttpUrl("https://www.kinopoisk.ru/")
 
 
 class MovieUpdatePartial(MovieBase):
+    """
+    Модель частичного обновления фильма
+    """
     title: TitleString | None = None
     description: DescriptionString | None = None
     duration: PositiveInt | str | None = None
     kp_url: AnyHttpUrl | None = None
 
 
+class MovieOutput(MovieBase):
+    """
+    Модель вывода фильма
+    """
+    slug: str
+
+
 class Movie(MovieBase):
     """
     Модель фильма
     """
-
     slug: str
+

@@ -6,7 +6,12 @@ from starlette.responses import RedirectResponse
 
 from api.api_v1.movies.crud import storage
 from api.api_v1.movies.dependencies import prefetch_movie_by_slug
-from schemas.movie import Movie, MovieUpdate, MovieUpdatePartial
+from schemas.movie import (
+    Movie,
+    MovieUpdate,
+    MovieUpdatePartial,
+    MovieOutput,
+)
 
 router = APIRouter(
     prefix="/{slug}",
@@ -32,7 +37,7 @@ MovieBySlug = Annotated[
 
 @router.get(
     "/",
-    response_model=Movie,
+    response_model=MovieOutput,
 )
 def read_movie_by_slug(
     movie: MovieBySlug,
@@ -42,7 +47,7 @@ def read_movie_by_slug(
 
 @router.put(
     "/",
-    response_model=Movie,
+    response_model=MovieOutput,
 )
 def update_movie_detail(
     movie: MovieBySlug,
@@ -56,7 +61,7 @@ def update_movie_detail(
 
 @router.patch(
     "/",
-    response_model=Movie,
+    response_model=MovieOutput,
 )
 def update_movie_detail_partial(
     movie: MovieBySlug,
