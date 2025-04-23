@@ -1,4 +1,4 @@
-from pydantic import BaseModel, AnyHttpUrl
+from pydantic import BaseModel, AnyHttpUrl, ValidationError
 
 from schemas.movie import (
     Movie,
@@ -6,6 +6,8 @@ from schemas.movie import (
     MovieUpdate,
     MovieUpdatePartial,
 )
+
+from core.config import MOVIE_STORAGE_FILE_PATH
 
 
 # MOVIE_LIST = [
@@ -35,6 +37,15 @@ from schemas.movie import (
 class MovieStorage(BaseModel):
     slug_to_movie: dict[str, Movie] = {}
 
+    def save_state(self) -> None:
+        MOVIE_STORAGE_FILE_PATH.write_text(self.model_dump_json(indent=4))
+
+    @classmethod
+    def from_state(cls) -> "MovieStorage":
+        if not MOVIE_STORAGE_FILE_PATH.exists():
+            return MovieStorage()
+        return cls.model_validate_json(MOVIE_STORAGE_FILE_PATH.read_text())
+
     def get(self) -> list[Movie]:
         return list(self.slug_to_movie.values())
 
@@ -44,10 +55,12 @@ class MovieStorage(BaseModel):
     def create(self, movie_in: MovieCreate) -> Movie:
         movie = Movie(**movie_in.model_dump())
         self.slug_to_movie[movie.slug] = movie
+        self.save_state()
         return movie
 
     def delete_by_slug(self, slug: str) -> None:
         self.slug_to_movie.pop(slug, None)
+        self.save_state()
 
     def delete(self, movie: Movie) -> None:
         self.delete_by_slug(movie.slug)
@@ -59,6 +72,7 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in:
             setattr(movie, field_name, value)
+        self.save_state()
         return movie
 
     def update_partial(
@@ -68,34 +82,39 @@ class MovieStorage(BaseModel):
     ) -> Movie:
         for field_name, value in movie_in.model_dump(exclude_unset=True).items():
             setattr(movie, field_name, value)
+        self.save_state()
         return movie
 
 
-storage = MovieStorage()
+try:
+    storage = MovieStorage.from_state()
+except ValidationError:
+    storage = MovieStorage()
+    storage.save_state()
 
-storage.create(
-    MovieCreate(
-        slug="clue",
-        title="Clue",
-        description="Шесть гостей приезжают на светский ужин в загородный особняк, где их встречает дворецкий "
-        "Уодсворт. Приглашенные незнакомы ни друг с другом, ни с хозяином дома, которого вскоре кто-то "
-        "убивает.",
-        duration=94,
-        kp_url=AnyHttpUrl("https://www.kinopoisk.ru/film/14940/"),
-    )
-)
-
-storage.create(
-    MovieCreate(
-        slug="murder_by_death",
-        title="Murder by Death",
-        description="Миллионер Лайонел Твейни приглашает на ужин в свой замок пятерых самых знаменитых детективов "
-        "мира: Сиднея Вана из Китая, Дика Чарльстона из Нью-Йорка, Джессику Марблс из Англии, "
-        "Майло Перье из Бельгии, Сэма Даймонда из Сан-Франциско. И надо же такому случиться, "
-        "что во время ужина появляется мистер Твейни и сообщает, что ровно в полночь в замке произойдет "
-        "убийство. Он предлагает миллион долларов тому, кто раскроет это преступление. Но за час до "
-        "полуночи обнаруживают труп слепого слуги мистера Твейни.",
-        duration=95,
-        kp_url=None,
-    )
-)
+# storage.create(
+#     MovieCreate(
+#         slug="clue",
+#         title="Clue",
+#         description="Шесть гостей приезжают на светский ужин в загородный особняк, где их встречает дворецкий "
+#         "Уодсворт. Приглашенные незнакомы ни друг с другом, ни с хозяином дома, которого вскоре кто-то "
+#         "убивает.",
+#         duration=94,
+#         kp_url=AnyHttpUrl("https://www.kinopoisk.ru/film/14940/"),
+#     )
+# )
+#
+# storage.create(
+#     MovieCreate(
+#         slug="murder_by_death",
+#         title="Murder by Death",
+#         description="Миллионер Лайонел Твейни приглашает на ужин в свой замок пятерых самых знаменитых детективов "
+#         "мира: Сиднея Вана из Китая, Дика Чарльстона из Нью-Йорка, Джессику Марблс из Англии, "
+#         "Майло Перье из Бельгии, Сэма Даймонда из Сан-Франциско. И надо же такому случиться, "
+#         "что во время ужина появляется мистер Твейни и сообщает, что ровно в полночь в замке произойдет "
+#         "убийство. Он предлагает миллион долларов тому, кто раскроет это преступление. Но за час до "
+#         "полуночи обнаруживают труп слепого слуги мистера Твейни.",
+#         duration=95,
+#         kp_url=None,
+#     )
+# )
