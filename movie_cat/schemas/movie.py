@@ -40,6 +40,7 @@ class MovieUpdate(MovieBase):
     """
     Модель полного обновления фильма
     """
+
     duration: PositiveInt
     kp_url: AnyHttpUrl = AnyHttpUrl("https://www.kinopoisk.ru/")
 
@@ -48,6 +49,7 @@ class MovieUpdatePartial(MovieBase):
     """
     Модель частичного обновления фильма
     """
+
     title: TitleString | None = None
     description: DescriptionString | None = None
     duration: PositiveInt | str | None = None
@@ -58,6 +60,7 @@ class MovieOutput(MovieBase):
     """
     Модель вывода фильма
     """
+
     slug: str
 
 
@@ -65,5 +68,5 @@ class Movie(MovieBase):
     """
     Модель фильма
     """
-    slug: str
 
+    slug: str
