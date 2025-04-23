@@ -71,4 +71,3 @@ class Movie(MovieBase):
 
     slug: str
     notes: str
-
