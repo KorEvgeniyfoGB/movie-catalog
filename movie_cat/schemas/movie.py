@@ -70,4 +70,4 @@ class Movie(MovieBase):
     """
 
     slug: str
-    notes: str
+    notes: str | None = None
