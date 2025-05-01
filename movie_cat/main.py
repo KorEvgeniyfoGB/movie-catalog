@@ -6,9 +6,11 @@ from fastapi import (
 )
 from api import router as api_router
 from core import config
+from app_lifespan import lifespan
 
 app = FastAPI(
     title="Movie Catalog",
+    lifespan=lifespan,
 )
 
 app.include_router(api_router)
