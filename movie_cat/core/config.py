@@ -7,7 +7,7 @@ MOVIE_STORAGE_FILE_PATH = BASE_DIR / "storage.json"
 
 LOG_LEVEL = logging.INFO
 LOG_FORMAT: str = (
-    "[%(asctime)s.%(msecs)03d] %(module)10s:%(lineno)-3d %(levelname)-7s - %(message)s"
+    "[%(asctime)s.%(msecs)03d] %(module)12s:%(lineno)-3d %(levelname)-7s - %(message)s"
 )
 
 # if __name__ == "__main__":
