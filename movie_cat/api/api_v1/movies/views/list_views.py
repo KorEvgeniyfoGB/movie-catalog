@@ -1,17 +1,23 @@
 from fastapi import (
     APIRouter,
     BackgroundTasks,
+    Depends,
 )
 from starlette import status
 
 from api.api_v1.movies.crud import storage
+from api.api_v1.movies.dependencies import save_state_storage
 from schemas.movie import (
     Movie,
     MovieCreate,
     MovieRead,
 )
 
-router = APIRouter(prefix="/movies", tags=["Movies"])
+router = APIRouter(
+    prefix="/movies",
+    tags=["Movies"],
+    dependencies=[Depends(save_state_storage)],
+)
 
 
 @router.get(
@@ -29,7 +35,5 @@ def read_movies_list():
 )
 def create_movie(
     movie_create: MovieCreate,
-    background_tasks: BackgroundTasks,
 ):
-    background_tasks.add_task(storage.save_state)
     return storage.create(movie_in=movie_create)

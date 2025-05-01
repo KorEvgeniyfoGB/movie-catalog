@@ -57,9 +57,7 @@ def read_movie_by_slug(
 def update_movie_detail(
     movie: MovieBySlug,
     movie_in: MovieUpdate,
-    background_tasks: BackgroundTasks,
 ) -> Movie:
-    background_tasks.add_task(storage.save_state)
     return storage.update(
         movie=movie,
         movie_in=movie_in,
@@ -73,9 +71,7 @@ def update_movie_detail(
 def update_movie_detail_partial(
     movie: MovieBySlug,
     movie_in: MovieUpdatePartial,
-    background_tasks: BackgroundTasks,
 ) -> Movie:
-    background_tasks.add_task(storage.save_state)
     return storage.update_partial(movie=movie, movie_in=movie_in)
 
 
@@ -99,7 +95,5 @@ def redirect_to_kp(
 )
 def delete_movie_by_slug(
     movie: MovieBySlug,
-    background_tasks: BackgroundTasks,
 ) -> None:
     storage.delete(movie=movie)
-    background_tasks.add_task(storage.save_state)
