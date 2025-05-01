@@ -1,9 +1,12 @@
+import logging
+
 from fastapi import HTTPException, BackgroundTasks
 from starlette import status
 
 from api.api_v1.movies.crud import storage
 from schemas.movie import Movie
 
+log = logging.getLogger(__name__)
 
 def prefetch_movie_by_slug(slug: str) -> Movie:
     movie: Movie | None = storage.get_by_slug(slug=slug)
@@ -19,4 +22,6 @@ def save_state_storage(
     background_tasks: BackgroundTasks,
 ):
     yield
+    log.info("Add background task to saave storage")
     background_tasks.add_task(storage.save_state)
+
