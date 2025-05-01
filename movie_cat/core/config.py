@@ -13,3 +13,10 @@ LOG_FORMAT: str = (
 # if __name__ == "__main__":
 #     print(BASE_DIR)
 #     print(MOVIE_STORAGE_FILE_PATH)
+# only for experiments
+API_TOKENS = frozenset(
+    {
+        "9Uzk-h4XiNGleLxqrbJyOA",
+        "l5Tqx81w0Ufx_JiOUiRWew",
+    }
+)

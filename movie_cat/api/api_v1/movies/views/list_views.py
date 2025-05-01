@@ -6,7 +6,10 @@ from fastapi import (
 from starlette import status
 
 from api.api_v1.movies.crud import storage
-from api.api_v1.movies.dependencies import save_state_storage
+from api.api_v1.movies.dependencies import (
+    save_state_storage,
+    api_token_required,
+)
 from schemas.movie import (
     Movie,
     MovieCreate,
@@ -16,7 +19,10 @@ from schemas.movie import (
 router = APIRouter(
     prefix="/movies",
     tags=["Movies"],
-    dependencies=[Depends(save_state_storage)],
+    dependencies=[
+        Depends(save_state_storage),
+        Depends(api_token_required),
+    ],
 )
 
 
