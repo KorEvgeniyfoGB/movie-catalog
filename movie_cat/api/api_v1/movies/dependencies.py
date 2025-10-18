@@ -6,6 +6,7 @@ from fastapi import (
     BackgroundTasks,
     Request,
     Query,
+    Header,
 )
 from starlette import status
 
@@ -45,10 +46,17 @@ def save_state_storage(
         background_tasks.add_task(storage.save_state)
 
 
-def api_token_required(request: Request, api_token: Annotated[str, Query()] = ""):
+def api_token_required(
+    request: Request,
+    api_token: Annotated[
+        str,
+        Header(alias="x-auth-token"),
+    ] = "",
+):
     if request.method not in UNSAFE_METHODS:
         return
     if api_token not in API_TOKENS:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API token"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid API token",
         )
